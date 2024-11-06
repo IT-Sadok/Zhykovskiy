@@ -32,8 +32,7 @@ public class Database
     {
         var index = Materials.FindIndex(m => m.Id == id);
         if (index == -1) return false;
-
-        material.Id = id;
+        
         Materials[index] = material;
 
         SaveChanges();

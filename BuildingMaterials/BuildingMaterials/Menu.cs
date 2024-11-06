@@ -150,6 +150,7 @@ public class Menu(Database database)
                     break;
                 case ConsoleKey.D5:
                     material = GetMaterial();
+                    material.Id = id;
                     break;
                 case ConsoleKey.D6:
                     break;
