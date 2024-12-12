@@ -1,10 +1,12 @@
 using System.Text;
-using Core.DTO;
+using Application.Commands;
+using Application.Queries;
 using Core.Interfaces.Services;
 using Core.Models;
 using Core.Options;
 using Core.Services;
 using Infrastructure.Data;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +17,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<ApplicationContext>(options =>
@@ -23,6 +24,11 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
 
 builder.Services.AddIdentity<User, IdentityRole<int>>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationContext>();
+
+builder.Services.AddMediatR(configuration =>
+{
+    configuration.RegisterServicesFromAssemblies(typeof(SignInQuery).Assembly);
+});
 
 builder.Services.AddAuthorization();
 
@@ -77,11 +83,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapPost("sign-up",
-    ([FromServices] IUserService userService, [FromBody] SignUpModel model) =>
-        userService.RegisterUserAsync(model));
+    ([FromServices] IMediator mediator, [FromBody] SignUpCommand command) =>
+        mediator.Send(command));
 
 app.MapPost("sign-in",
-    ([FromServices] IUserService userService, [FromBody] SignInModel model) =>
-        userService.LoginUserAsync(model));
+    ([FromServices] IMediator mediator, [FromBody] SignInQuery query) =>
+        mediator.Send(query));
 
 app.Run();
