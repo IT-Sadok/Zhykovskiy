@@ -30,7 +30,7 @@ public class JwtService : IJwtService
             Issuer = _jwtOptions.Issuer,
             Audience = _jwtOptions.Audience,
             SigningCredentials = new SigningCredentials
-            (new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key)),
+            (new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key!)),
                 SecurityAlgorithms.HmacSha512Signature)
         };
         var tokenHandler = new JwtSecurityTokenHandler();
